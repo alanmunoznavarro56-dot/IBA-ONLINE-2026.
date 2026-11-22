@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBA ONLINE | Descubre Ibagué - Prototipo TRL 5</title>
+<style>
+:root{--green:#176b57;--dark:#123f34;--mint:#e5f1ed;--bg:#f4f7f5;--muted:#65756e;--line:#dfe8e3}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#183b32;line-height:1.5}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+header{background:var(--green);color:#fff;padding:16px 5%;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+.logo{font-size:27px;font-weight:800;letter-spacing:1px}.subtitle{font-size:13px;opacity:.9}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+nav button{border:1px solid #ffffff55;background:#ffffff15;color:#fff;padding:9px 12px;border-radius:10px}
+.search{display:flex;background:white;border-radius:30px;padding:5px;width:min(400px,100%)}
+.search input{border:0;outline:0;padding:9px 13px;min-width:0;flex:1}.search button{background:var(--dark);color:white;border:0;border-radius:25px;padding:9px 15px}
+main{max-width:1200px;margin:auto;padding:30px 5%;min-height:70vh}
+.hero{background:linear-gradient(135deg,#dcefe8,#f6f2e8);border-radius:22px;padding:38px;margin-bottom:28px}
+.hero h1{font-size:clamp(28px,4vw,42px);max-width:720px;margin-bottom:12px}.hero p{max-width:720px;color:var(--muted);margin-bottom:18px}
+.btn{border:0;border-radius:10px;padding:10px 15px;font-weight:700;background:var(--green);color:#fff}
+.btn.secondary{background:var(--mint);color:var(--green)}.btn.danger{background:#a53d3d}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:25px 0 14px}
+.categories,.cards,.stats{display:grid;gap:15px}.categories{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.category,.card,.panel,.stat{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 5px 18px #1432280b}
+.category{padding:18px;text-align:left}.category:hover,.card:hover{transform:translateY(-2px)}.category-icon{font-size:30px}
+.cards{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{overflow:hidden}.card-top{height:115px;background:linear-gradient(135deg,#6d9d88,#214f42);display:grid;place-items:center;color:white;font-size:52px}
+.card-body{padding:17px}.pill{display:inline-block;background:var(--mint);color:var(--green);border-radius:20px;padding:4px 9px;font-size:12px;font-weight:bold}
+.card h3{margin:8px 0}.muted{color:var(--muted);font-size:14px}.panel{padding:20px;margin:15px 0}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+label{display:block;font-weight:700;font-size:13px;margin-bottom:5px}input,textarea,select{width:100%;border:1px solid #cbd8d1;border-radius:9px;padding:10px;background:white;color:#183b32}
+textarea{min-height:90px;resize:vertical}.field{margin-bottom:12px}
+.detail{display:grid;grid-template-columns:1fr 1fr;gap:24px}.detail-visual{min-height:300px;border-radius:18px;background:linear-gradient(135deg,#668f7d,#173e34);display:grid;place-items:center;color:white;font-size:100px}
+.stats{grid-template-columns:repeat(auto-fit,minmax(145px,1fr))}.stat{padding:16px}.stat strong{display:block;font-size:26px;color:var(--green)}
+.notice{background:#fff8e5;border-left:4px solid #d49a24;padding:12px 15px;border-radius:8px;margin:15px 0;font-size:14px}
+.success{background:#e9f6ee;border-left:4px solid #31965a;padding:12px 15px;border-radius:8px;margin:12px 0}
+.empty{background:white;border-radius:16px;padding:35px;text-align:center;color:var(--muted)}
+.rating{color:#b47a00;font-weight:bold}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+footer{background:var(--dark);color:white;text-align:center;padding:22px;font-size:13px}
+.small{font-size:12px;color:var(--muted)}.hidden{display:none!important}
+@media(max-width:700px){header{align-items:stretch}.detail{grid-template-columns:1fr}.hero{padding:25px}nav{order:3}}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="logo">IBA ONLINE</div><div class="subtitle">Descubre Ibagué, conecta con lo local</div></div>
+  <form class="search" id="searchForm"><input id="searchInput" placeholder="¿Qué quieres encontrar?" aria-label="Buscar"><button>Buscar</button></form>
+  <nav>
+    <button onclick="showHome()">Inicio</button>
+    <button onclick="showFavorites()">♥ Favoritos</button>
+    <button onclick="showBusinessForm()">Publicar negocio</button>
+    <button onclick="showTesting()">Pruebas TRL 5</button>
+  </nav>
+</header>
+<main id="mainContent"></main>
+<footer>IBA ONLINE · Prototipo funcional para validación en entorno relevante<br>Turismo · Cultura · Gastronomía · Alojamiento · Emprendimientos</footer>
+<script>
+"use strict";
+/*
+ IBA ONLINE - versión de prototipo ampliado.
+ Los datos se guardan localmente en este navegador mediante localStorage.
+ No es una plataforma de producción: no incluye servidor, autenticación segura
+ ni sincronización entre dispositivos. Ver las recomendaciones TRL 5.
+*/
+const KEY="ibaOnlineTRL5_v1";
+const seed=[
+{id:1,category:"Atractivos turísticos",icon:"🏞️",name:"Cañón del Combeima",location:"Ibagué, Tolima",description:"Destino natural reconocido por sus paisajes de montaña, biodiversidad y posibilidades para disfrutar del turismo de naturaleza.",schedule:"Consultar horarios antes de la visita.",contact:"",additional:"Ideal para conocer los paisajes naturales de Ibagué."},
+{id:2,category:"Atractivos turísticos",icon:"🌳",name:"Jardín Botánico San Jorge",location:"Ibagué, Tolima",description:"Espacio natural dedicado a la conservación y educación ambiental, con senderos y diferentes especies vegetales.",schedule:"Consultar horarios antes de la visita.",contact:"",additional:"Alternativa para conocer la biodiversidad."},
+{id:3,category:"Cultura y eventos",icon:"🎭",name:"Festival Folclórico Colombiano",location:"Ibagué, Tolima",description:"Evento cultural que reúne música, danza, tradiciones y expresiones artísticas de la región.",schedule:"Programación según calendario del evento.",contact:"",additional:"Consulta la programación oficial antes de asistir."},
+{id:4,category:"Gastronomía",icon:"🍲",name:"Sabores del Tolima",location:"Ibagué, Tolima",description:"Propuesta para descubrir platos tradicionales y gastronomía representativa del Tolima.",schedule:"Consultar con el establecimiento.",contact:"",additional:"Conoce la gastronomía regional."},
+{id:5,category:"Alojamiento",icon:"🏨",name:"Hospedaje La Montaña",location:"Ibagué, Tolima",description:"Ejemplo de ficha de alojamiento para validar el funcionamiento del directorio.",schedule:"Atención por confirmar.",contact:"",additional:"Registro demostrativo; verificar datos antes de publicar."},
+{id:6,category:"Emprendimientos y servicios",icon:"💼",name:"Artesanías del Tolima",location:"Ibagué, Tolima",description:"Ejemplo de emprendimiento dedicado a productos artesanales y talento local.",schedule:"Horario por confirmar.",contact:"",additional:"Registro demostrativo; verificar datos antes de publicar."}
+];
+function loadData(){try{return JSON.parse(localStorage.getItem(KEY))||{places:seed,users:[],favorites:[],reviews:[],tests:[]}}catch(e){return {places:seed,users:[],favorites:[],reviews:[],tests:[]}}}
+let db=loadData();
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+const main=document.getElementById("mainContent");
+const categories=[
+["Atractivos turísticos","🏞️","Lugares naturales y sitios para visitar."],
+["Cultura y eventos","🎭","Tradiciones, arte y actividades culturales."],
+["Gastronomía","🍲","Sabores y propuestas gastronómicas."],
+["Alojamiento","🏨","Opciones para hospedarse."],
+["Emprendimientos y servicios","💼","Negocios y servicios locales."]
+];
+function card(p){
+ const avg=db.reviews.filter(r=>r.placeId===p.id);
+ const rating=avg.length?(avg.reduce((a,b)=>a+b.score,0)/avg.length).toFixed(1):"Sin calificar";
+ return `<article class="card"><div class="card-top">${esc(p.icon||"📍")}</div><div class="card-body">
+ <span class="pill">${esc(p.category)}</span><h3>${esc(p.name)}</h3><p class="muted">${esc(p.description)}</p>
+ <p class="muted">📍 ${esc(p.location)} · <span class="rating">★ ${rating}</span></p>
+ <div class="actions"><button class="btn" onclick="showDetail(${p.id})">Ver ficha</button><button class="btn secondary" onclick="toggleFavorite(${p.id})">♥ Favorito</button></div>
+ </div></article>`;
+}
+function showHome(){
+ main.innerHTML=`<section class="hero"><h1>Explora Ibagué de una nueva manera</h1><p>Encuentra atractivos turísticos, cultura, gastronomía, alojamiento y emprendimientos locales en un solo lugar. Este prototipo permite probar búsquedas, fichas, favoritos, publicaciones y opiniones.</p><div class="row"><button class="btn" onclick="showListing('Todos los contenidos',db.places)">Explorar directorio</button><button class="btn secondary" onclick="showBusinessForm()">Registrar emprendimiento</button></div></section>
+ <div class="section-head"><h2>Explora por categoría</h2></div><div class="categories">${categories.map(c=>`<button class="category" onclick="showCategory('${c[0]}')"><div class="category-icon">${c[1]}</div><strong>${c[0]}</strong><p class="muted">${c[2]}</p></button>`).join("")}</div>
+ <div class="section-head"><h2>Contenidos destacados</h2><span class="muted">${db.places.length} registros</span></div><div class="cards">${db.places.slice(0,3).map(card).join("")}</div>
+ <div class="notice"><strong>Importante:</strong> algunos registros iniciales son demostrativos. Antes de una prueba con visitantes, valida nombres, horarios, contactos, permisos y ubicación con cada prestador.</div>`;
+}
+function showListing(title,items){main.innerHTML=`<div class="section-head"><h1>${esc(title)}</h1><span class="muted">${items.length} resultado(s)</span></div>${items.length?`<div class="cards">${items.map(card).join("")}</div>`:`<div class="empty">No encontramos resultados. Prueba otra búsqueda.</div>`}`}
+function showCategory(cat){showListing(cat,db.places.filter(p=>p.category===cat))}
+function showDetail(id){
+ const p=db.places.find(x=>x.id===id);if(!p)return;
+ const reviews=db.reviews.filter(r=>r.placeId===id);
+ main.innerHTML=`<button class="btn secondary" onclick="showHome()">← Volver</button><section class="panel detail" style="margin-top:15px"><div class="detail-visual">${esc(p.icon||"📍")}</div><div><span class="pill">${esc(p.category)}</span><h1 style="margin:10px 0">${esc(p.name)}</h1><p>${esc(p.description)}</p><p style="margin-top:12px">📍 <strong>Ubicación:</strong> ${esc(p.location)}</p><p>🕒 <strong>Horario:</strong> ${esc(p.schedule||"Por confirmar")}</p><p>☎ <strong>Contacto:</strong> ${esc(p.contact||"No registrado")}</p><p style="margin-top:10px">${esc(p.additional||"")}</p><div class="actions"><button class="btn" onclick="toggleFavorite(${p.id})">♥ Guardar en favoritos</button>${p.contact?`<a class="btn secondary" href="https://wa.me/${encodeURIComponent(p.contact.replace(/\\D/g,''))}" target="_blank" rel="noopener">Contactar</a>`:""}</div></div></section>
+ <section class="panel"><h2>Calificar este lugar</h2><form onsubmit="addReview(event,${p.id})"><div class="form-grid"><div class="field"><label>Tu nombre (opcional)</label><input name="author" maxlength="50" placeholder="Visitante"></div><div class="field"><label>Calificación</label><select name="score" required><option value="">Selecciona</option><option value="5">5 - Excelente</option><option value="4">4 - Muy bueno</option><option value="3">3 - Bueno</option><option value="2">2 - Regular</option><option value="1">1 - Deficiente</option></select></div></div><div class="field"><label>Comentario</label><textarea name="comment" maxlength="400" required placeholder="Cuéntanos tu experiencia"></textarea></div><button class="btn">Enviar opinión</button></form></section>
+ <section class="panel"><h2>Opiniones (${reviews.length})</h2>${reviews.length?reviews.map(r=>`<p style="padding:10px 0;border-bottom:1px solid var(--line)"><strong>${esc(r.author||"Visitante")}</strong> · <span class="rating">★ ${r.score}/5</span><br>${esc(r.comment)}<br><span class="small">${new Date(r.date).toLocaleDateString("es-CO")}</span></p>`).join(""):"<p class='muted'>Aún no hay opiniones. Puedes ser la primera persona en calificar.</p>"}</section>`;
+}
+function toggleFavorite(id){const i=db.favorites.indexOf(id);if(i>=0)db.favorites.splice(i,1);else db.favorites.push(id);save();showFavorites()}
+function showFavorites(){const items=db.places.filter(p=>db.favorites.includes(p.id));main.innerHTML=`<div class="section-head"><h1>Mis favoritos</h1></div>${items.length?`<div class="cards">${items.map(card).join("")}</div>`:`<div class="empty">Todavía no guardas lugares. Entra a una ficha y selecciona “Favorito”.</div>`}`}
+function addReview(e,id){e.preventDefault();const f=new FormData(e.target);db.reviews.push({placeId:id,author:f.get("author"),score:Number(f.get("score")),comment:f.get("comment"),date:new Date().toISOString()});save();showDetail(id)}
+function showBusinessForm(){
+ main.innerHTML=`<section class="panel"><h1>Publicar un emprendimiento o servicio</h1><p class="muted">Completa la ficha para agregar un registro local al directorio de este navegador.</p><div class="notice">En esta versión la publicación queda guardada solo en este dispositivo. No se envía a un servidor ni queda visible en otros equipos.</div>
+ <form id="businessForm"><div class="form-grid"><div class="field"><label>Nombre del negocio *</label><input name="name" required maxlength="80"></div><div class="field"><label>Categoría *</label><select name="category" required>${categories.map(c=>`<option>${c[0]}</option>`).join("")}</select></div><div class="field"><label>Ubicación / dirección *</label><input name="location" required maxlength="120" placeholder="Barrio, Ibagué, Tolima"></div><div class="field"><label>Teléfono o WhatsApp</label><input name="contact" maxlength="30"></div><div class="field"><label>Horario</label><input name="schedule" maxlength="100"></div></div><div class="field"><label>Descripción *</label><textarea name="description" required maxlength="350"></textarea></div><div class="field"><label>Información adicional</label><textarea name="additional" maxlength="250"></textarea></div><button class="btn">Guardar publicación</button></form></section>`;
+ document.getElementById("businessForm").addEventListener("submit",e=>{e.preventDefault();const f=new FormData(e.target);db.places.push({id:Date.now(),category:f.get("category"),icon:"📍",name:f.get("name").trim(),location:f.get("location").trim(),contact:f.get("contact").trim(),schedule:f.get("schedule").trim(),description:f.get("description").trim(),additional:f.get("additional").trim(),submitted:true});save();main.innerHTML=`<div class="success"><strong>Registro guardado en este navegador.</strong> Para publicación real se requiere revisión y aprobación por un administrador.</div><button class="btn" onclick="showListing('Directorio actualizado',db.places)">Ver directorio</button>`;});
+}
+function showTesting(){
+ const checks=["La página inicial carga correctamente","El buscador encuentra registros por nombre y categoría","Los filtros de categoría muestran resultados correctos","Las fichas muestran ubicación, horario y contacto","Se puede guardar y quitar un favorito","Una opinión se registra y aparece en la ficha","Un emprendimiento se registra con campos obligatorios","Los datos siguen disponibles después de recargar la página","La interfaz se puede usar desde un teléfono móvil","Se verificó la exactitud de los datos con prestadores reales"];
+ main.innerHTML=`<section class="panel"><h1>Validación funcional del prototipo</h1><p class="muted">Marca cada prueba solo después de ejecutarla. El resultado queda guardado en este navegador.</p><div class="notice"><strong>TRL 5:</strong> esta lista ayuda a documentar pruebas, pero marcar casillas no demuestra por sí solo el nivel. Debes ejecutar pruebas con usuarios representativos y prestadores reales en un entorno relevante, registrar resultados y evidencias.</div><div class="stats"><div class="stat"><strong>${db.tests.filter(Boolean).length}/${checks.length}</strong><span class="muted">Pruebas marcadas</span></div><div class="stat"><strong>${db.places.length}</strong><span class="muted">Registros del directorio</span></div><div class="stat"><strong>${db.reviews.length}</strong><span class="muted">Opiniones guardadas</span></div></div><div class="panel">${checks.map((c,i)=>`<label style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-weight:normal"><input style="width:auto;margin-top:4px" type="checkbox" ${db.tests[i]?"checked":""} onchange="setTest(${i},this.checked)"><span>${c}</span></label>`).join("")}</div><div class="actions"><button class="btn" onclick="exportEvidence()">Descargar reporte de pruebas (.csv)</button><button class="btn secondary" onclick="resetTests()">Reiniciar lista</button></div></section>
+ <section class="panel"><h2>Qué falta para sustentar TRL 5</h2><ol style="padding-left:22px;margin-top:10px"><li>Seleccionar un entorno relevante de prueba en Ibagué.</li><li>Incorporar datos reales y autorizados de prestadores turísticos y emprendimientos.</li><li>Invitar usuarios representativos (visitantes y negocios) y definir tareas.</li><li>Ejecutar pruebas observadas y registrar fecha, participantes, incidencias y resultados.</li><li>Corregir fallas y repetir las pruebas críticas.</li><li>Conservar evidencias: capturas, formularios, actas, métricas y versión probada.</li></ol></section>`;
+}
+function setTest(i,v){db.tests[i]=v;save()}
+function resetTests(){if(confirm("¿Reiniciar todas las pruebas marcadas?")){db.tests=[];save();showTesting()}}
+function exportEvidence(){const rows=[["Prueba","Estado"],...["La página inicial carga correctamente","El buscador encuentra registros por nombre y categoría","Los filtros de categoría muestran resultados correctos","Las fichas muestran ubicación, horario y contacto","Se puede guardar y quitar un favorito","Una opinión se registra y aparece en la ficha","Un emprendimiento se registra con campos obligatorios","Los datos siguen disponibles después de recargar la página","La interfaz se puede usar desde un teléfono móvil","Se verificó la exactitud de los datos con prestadores reales"].map((x,i)=>[x,db.tests[i]?"Marcada":"Pendiente"])];const csv="\\uFEFF"+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(";")).join("\\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="IBA_ONLINE_reporte_pruebas.csv";a.click();URL.revokeObjectURL(a.href)}
+document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();const q=document.getElementById("searchInput").value.trim().toLocaleLowerCase("es");const found=db.places.filter(p=>[p.name,p.category,p.location,p.description,p.additional].join(" ").toLocaleLowerCase("es").includes(q));showListing(q?`Resultados para “${q}”`:"Todos los contenidos",found)});
+showHome();
+</script>
+</body>
+</html>
